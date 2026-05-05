@@ -1,0 +1,99 @@
+@baseUrl = http://localhost:4004/odata/v4/leave
+@employeeId = 00000000-0000-0000-0000-000000000002
+
+# Setelah Direct Create berhasil, copy ID dari response lalu paste di sini
+@requestId = a05327da-2842-401b-b6de-ea3d056ce6ee
+
+
+### ======================================================
+### 1. SERVICE CHECK
+### ======================================================
+
+### Service Root
+GET {{baseUrl}}/
+
+
+### Metadata
+GET {{baseUrl}}/$metadata
+
+
+### ======================================================
+### 2. READ DATA
+### ======================================================
+
+### Get All Leave Requests
+GET {{baseUrl}}/LeaveRequests
+
+
+### Get Active Leave Requests
+GET {{baseUrl}}/LeaveRequests?$filter=IsActiveEntity eq true
+
+
+### Get Leave Requests with Approval History
+GET {{baseUrl}}/LeaveRequests?$expand=LeaveApprovals
+
+
+### ======================================================
+### 3. DIRECT CREATE ACTIVE
+### ======================================================
+### Requires package.json:
+### "cds": {
+###   "fiori": {
+###     "direct_crud": true
+###   }
+### }
+
+### Direct Create Active Leave Request
+POST {{baseUrl}}/LeaveRequests
+Content-Type: application/json
+Authorization: Basic employee@company.com:123456
+
+{
+  "RequestNumber": "REQ-ACTIVE-001",
+  "Reason": "Annual leave using direct create active flow",
+  "Employee_ID": "{{employeeId}}",
+  "Status": "Drafted",
+  "RequestDate": "2026-05-05T09:00:00Z"
+}
+
+
+### ======================================================
+### 4. READ CREATED ACTIVE DATA
+### ======================================================
+### Paste ID from Direct Create response into @requestId first
+
+### Read Active Leave Request by ID
+GET {{baseUrl}}/LeaveRequests(ID='{{requestId}}',IsActiveEntity=true)
+
+
+### ======================================================
+### 5. SUBMIT ACTIVE LEAVE REQUEST
+### ======================================================
+
+### Submit Leave Request
+POST {{baseUrl}}/LeaveRequests(ID='{{requestId}}',IsActiveEntity=true)/LeaveService.submit
+Content-Type: application/json
+
+{}
+
+
+### Read Submitted Leave Request
+GET {{baseUrl}}/LeaveRequests(ID='{{requestId}}',IsActiveEntity=true)
+
+
+### ======================================================
+### 6. APPROVE SUBMITTED LEAVE REQUEST
+### ======================================================
+
+### Approve Leave Request
+POST http://localhost:4004/odata/v4/leave/LeaveRequests(ID='{{requestId}}',IsActiveEntity=true)/LeaveService.approve
+Authorization: Basic manager@company.com:123456
+Content-Type: application/json
+
+{
+  "Comments": "Approved using real approve-leave.js"
+}
+
+
+### Read Approved Leave Request with History
+GET {{baseUrl}}/LeaveRequests(ID='{{requestId}}',IsActiveEntity=true)?$expand=LeaveApprovals

@@ -1,0 +1,46 @@
+{
+  "name": "leave-approval-cap",
+  "version": "1.0.0",
+  "dependencies": {
+    "@sap/cds": "^9",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^2",
+    "cds-plugin-ui5": "^0.17.0"
+  },
+  "scripts": {
+    "start": "cds watch"
+  },
+  "cds": {
+    "fiori": {
+      "direct_crud": true
+    },
+    "requires": {
+      "auth": {
+        "kind": "mocked",
+        "users": {
+          "admin@company.com": {
+            "password": "123456",
+            "roles": [
+              "admin"
+            ]
+          },
+          "employee@company.com": {
+            "password": "123456",
+            "roles": [
+              "employee"
+            ]
+          },
+          "manager@company.com": {
+            "password": "123456",
+            "roles": [
+              "manager"
+            ]
+          }
+        },
+        "default": "employee@company.com"
+      }
+    }
+  }
+}
