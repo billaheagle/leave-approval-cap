@@ -52,7 +52,8 @@ module.exports = {
         });
 
         return {
-            Status: LeaveStatus.REJECTED
+            Status: LeaveStatus.REJECTED,
+            IsClosed: true
         };
     }
 };

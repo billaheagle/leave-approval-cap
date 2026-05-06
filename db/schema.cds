@@ -28,10 +28,10 @@ entity Employees : cuid, managed {
 
 @odata.draft.enabled
 entity LeaveTypes : cuid, managed {
-    key Code        : String(10) not null;
-        Description : String(50) not null;
-        MaxDays     : Integer;
-        Active      : Boolean default true not null;
+    Code        : String(10) not null;
+    Description : String(50) not null;
+    MaxDays     : Integer;
+    Active      : Boolean default true not null;
 }
 
 @odata.draft.enabled

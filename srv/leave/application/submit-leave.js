@@ -16,8 +16,6 @@ module.exports = {
         }
 
         const tx = cds.tx(req);
-        console.log(req)
-        console.log(tx)
 
         const leaveRequest = await LeaveRequestRepository.findById(tx, srv, ID);
 
@@ -32,7 +30,11 @@ module.exports = {
         );
 
         // Generate Request Number menggunakan helper
-        const requestNumber = await RequestNumber.generateRequestNumber(tx);
+        const DEFAULT_REQUEST_NUMBER = "XX-XXXX-XXXXXXX";
+        const requestNumber =
+            leaveRequest.RequestNumber && leaveRequest.RequestNumber !== DEFAULT_REQUEST_NUMBER
+                ? leaveRequest.RequestNumber
+                : await RequestNumber.generateRequestNumber(tx);
 
         await LeaveRequestRepository.update(tx, srv, ID, {
             RequestNumber: requestNumber,

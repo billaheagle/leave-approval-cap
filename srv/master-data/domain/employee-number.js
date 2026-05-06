@@ -6,7 +6,7 @@ const extractSequence = (employeeNumber) => {
         return 0;
     }
 
-    const match = employeeNumber.match(/^EMP(\d+)$/);
+    const match = employeeNumber.match(/^EMP-(\d+)$/);
 
     if (!match) {
         return 0;
