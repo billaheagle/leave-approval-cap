@@ -2,7 +2,7 @@
 @employeeId = 00000000-0000-0000-0000-000000000002
 
 # Setelah Direct Create berhasil, copy ID dari response lalu paste di sini
-@requestId = a05327da-2842-401b-b6de-ea3d056ce6ee
+@requestId = 5cd49a29-60c6-4a09-afee-440fd64235ef
 
 
 ### ======================================================
@@ -49,7 +49,6 @@ Content-Type: application/json
 Authorization: Basic employee@company.com:123456
 
 {
-  "RequestNumber": "REQ-ACTIVE-001",
   "Reason": "Annual leave using direct create active flow",
   "Employee_ID": "{{employeeId}}",
   "Status": "Drafted",

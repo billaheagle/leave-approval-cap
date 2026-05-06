@@ -40,9 +40,7 @@ module.exports = {
         const approvalDate = new Date();
 
         await LeaveRequestRepository.updateStatus(tx, srv, ID, {
-            Status: LeaveStatus.APPROVED,
-            ApprovalDate: approvalDate,
-            Approver_ID: approver.ID
+            Status: LeaveStatus.APPROVED
         });
 
         await LeaveApprovalRepository.insert(tx, srv, {

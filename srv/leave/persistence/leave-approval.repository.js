@@ -4,7 +4,7 @@ module.exports = {
     async findByLeaveRequestId(tx, srv, LeaveRequest_ID) {
         const { LeaveApprovals } = srv.entities;
 
-        return BaseRepository.findManyOrderBy(
+        return BaseRepository.findMany(
             tx,
             LeaveApprovals,
             { LeaveRequest_ID },

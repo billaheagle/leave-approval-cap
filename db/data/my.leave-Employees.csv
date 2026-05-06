@@ -1,10 +1,8 @@
 ID,EmployeeNumber,FirstName,LastName,Email,Manager_ID,CostCenter,Country_code,Active
-00000000-0000-0000-0000-000000000001,EMP001,John,Doe,john.doe@company.com,,1001,ID,true
-00000000-0000-0000-0000-000000000002,EMP002,Jane,Smith,jane.smith@company.com,1,1002,US,true
-00000000-0000-0000-0000-000000000003,EMP003,Alice,Brown,alice.brown@company.com,1,1003,US,true
-00000000-0000-0000-0000-000000000004,EMP004,Bob,Johnson,bob.johnson@company.com,2,1004,UK,true
-00000000-0000-0000-0000-000000000005,EMP005,Charlie,White,charlie.white@company.com,3,1005,AU,false
-
-ID,EmployeeNumber,FirstName,LastName,Email,Manager_ID,CostCenter,Country_code,Active
-10000000-0000-0000-0000-000000000001,EMP001,Manager,User,manager@company.com,,CC001,ID,true
-10000000-0000-0000-0000-000000000002,EMP002,Employee,User,employee@company.com,10000000-0000-0000-0000-000000000001,CC002,ID,true
+00000000-0000-0000-0000-000000000001,EMP-000001,John,Doe,john.doe@company.com,,1001,ID,true
+00000000-0000-0000-0000-000000000002,EMP-000002,Jane,Smith,jane.smith@company.com,1,1002,US,true
+00000000-0000-0000-0000-000000000003,EMP-000003,Alice,Brown,alice.brown@company.com,1,1003,US,true
+00000000-0000-0000-0000-000000000004,EMP-000004,Bob,Johnson,bob.johnson@company.com,2,1004,UK,true
+00000000-0000-0000-0000-000000000005,EMP-000005,Charlie,White,charlie.white@company.com,3,1005,AU,false
+10000000-0000-0000-0000-000000000001,EMP-000006,Manager,User,manager@company.com,,CC001,ID,true
+10000000-0000-0000-0000-000000000002,EMP-000007,Employee,User,employee@company.com,10000000-0000-0000-0000-000000000001,CC002,ID,true

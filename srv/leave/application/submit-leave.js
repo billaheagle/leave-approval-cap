@@ -3,9 +3,9 @@ const cds = require("@sap/cds");
 const LeaveRequestRepository = require("../persistence/leave-request.repository");
 const LeaveStatus = require("../domain/leave-status");
 const LeaveTransition = require("../domain/leave-transition");
+const RequestNumber = require("../../common/helper/request-number");
 
 const getRequestId = (req) => req.params?.[0]?.ID || req.data?.ID;
-
 
 module.exports = {
     async execute(req, srv) {
@@ -31,7 +31,11 @@ module.exports = {
             LeaveStatus.SUBMITTED
         );
 
-        await LeaveRequestRepository.updateStatus(tx, srv, ID, {
+        // Generate Request Number menggunakan helper
+        const requestNumber = await RequestNumber.generateRequestNumber(tx);
+
+        await LeaveRequestRepository.update(tx, srv, ID, {
+            RequestNumber: requestNumber,
             Status: LeaveStatus.SUBMITTED,
             RequestDate: new Date()
         });
