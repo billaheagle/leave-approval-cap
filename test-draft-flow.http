@@ -1,136 +1,71 @@
 @baseUrl = http://localhost:4004/odata/v4/leave
 @employeeId = 00000000-0000-0000-0000-000000000002
 
-# Setelah draftNew berhasil, copy ID dari response lalu paste di sini
-@leaveRequestId = c5ba20bb-51d3-49c6-bda3-720f4ef9f70d
+@employeeAuth = Basic employee@company.com:123456
+@managerAuth = Basic manager@company.com:123456
+
+# Setelah step 1.1 berhasil, copy ID dari response lalu paste di sini
+@leaveRequestId = 54a2e507-521e-4c1c-960f-d168ce85ebcd
 
 
-### ======================================================
-### 1. SERVICE CHECK
-### ======================================================
-
-### Service Root
-GET {{baseUrl}}/
-
-
-### Metadata
-GET {{baseUrl}}/$metadata
-
-
-### ======================================================
-### 2. READ DATA
-### ======================================================
-
-### Get All Leave Requests
-GET {{baseUrl}}/LeaveRequests
-
-
-### Get Leave Requests with Approval History
-GET {{baseUrl}}/LeaveRequests?$expand=LeaveApprovals
-
-
-### Get Draft Leave Requests
-GET {{baseUrl}}/LeaveRequests?$filter=IsActiveEntity eq false
-
-
-### Get Active Leave Requests
-GET {{baseUrl}}/LeaveRequests?$filter=IsActiveEntity eq true
-
-
-### ======================================================
-### 3. CREATE EMPTY DRAFT
-### ======================================================
-### Kalau direct_crud true, draft dibuat via draftNew, bukan POST /LeaveRequests
-
-### Create New Draft
-POST {{baseUrl}}/LeaveRequests/LeaveService.draftNew
+### 1.1 - Create Business Draft
+POST {{baseUrl}}/LeaveRequests
+Authorization: {{employeeAuth}}
 Content-Type: application/json
-Authorization: Basic employee@company.com:123456
-
-{}
-
-
-### ======================================================
-### 4. UPDATE DRAFT DATA
-### ======================================================
-### Paste ID dari response draftNew ke @leaveRequestId dulu
-
-### Patch Draft Leave Request
-PATCH {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=false)
-Content-Type: application/json
-Authorization: Basic employee@company.com:123456
 
 {
-  "RequestNumber": "REQ-DRAFT-001",
-  "Reason": "Annual leave using draft flow",
+  "Reason": "Case 1 - Initial draft reason",
   "Employee_ID": "{{employeeId}}",
   "Status": "Drafted",
   "RequestDate": "2026-05-05T09:00:00Z"
 }
 
 
-### ======================================================
-### 5. READ CREATED DRAFT
-### ======================================================
-
-### Read Draft by ID
-GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=false)
-
-
-### Read All Drafts
-GET {{baseUrl}}/LeaveRequests?$filter=IsActiveEntity eq false
-
-
-### ======================================================
-### 6. ACTIVATE DRAFT
-### ======================================================
-
-### Activate Draft
-POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=false)/LeaveService.draftActivate
-Content-Type: application/json
-Authorization: Basic employee@company.com:123456
-
-{}
-
-
-### ======================================================
-### 7. READ ACTIVE AFTER ACTIVATE
-### ======================================================
-
-### Read Active by ID
+### 1.2 - Read Created Business Draft
 GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)
 
 
-### ======================================================
-### 8. SUBMIT ACTIVE LEAVE REQUEST
-### ======================================================
-
-### Submit Leave Request
-POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.submit
+### 1.3 - Patch Business Draft
+PATCH {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)
+Authorization: {{employeeAuth}}
 Content-Type: application/json
-Authorization: Basic employee@company.com:123456
-
-{}
-
-
-### Read Submitted Leave Request
-GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)
-
-
-### ======================================================
-### 9. APPROVE SUBMITTED LEAVE REQUEST
-### ======================================================
-### Ini baru jalan real kalau approve-leave.js nanti sudah kita implement
-
-### Approve Leave Request
-POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.approve
-Content-Type: application/json
-Authorization: Basic manager@company.com:123456
 
 {
-  "Comments": "Approved using draft flow test"
+  "Reason": "Case 1 - Updated draft reason before submit"
 }
 
 
-### Read Approved Leave Request with History
+### 1.4 - Read After Patch
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)
+
+
+### 1.5 - Submit Leave Request
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.submit
+Authorization: {{employeeAuth}}
+Content-Type: application/json
+
+{}
+
+
+### 1.6 - Read After Submit
+### Expected:
+### Status = Submitted
+### RequestNumber generated
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)
+
+
+### 1.7 - Approve Leave Request
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.approve
+Authorization: {{managerAuth}}
+Content-Type: application/json
+
+{
+  "Comments": "Case 1 approved after draft patch and submit"
+}
+
+
+### 1.8 - Read Approved Leave Request with Approval History
+### Expected:
+### Status = Approved
+### LeaveApprovals contains Approved history
 GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals

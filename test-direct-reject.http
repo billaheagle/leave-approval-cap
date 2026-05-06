@@ -1,72 +1,58 @@
 @baseUrl = http://localhost:4004/odata/v4/leave
 @employeeId = 00000000-0000-0000-0000-000000000002
 
-# Setelah Direct Create berhasil, copy ID dari response lalu paste di sini
-@rejectActiveLeaveRequestId = 3ad93df2-841e-4784-9f0a-4678970a6fea
+@employeeAuth = Basic employee@company.com:123456
+@managerAuth = Basic manager@company.com:123456
+
+# Setelah step 3.1 berhasil, copy ID dari response lalu paste di sini
+@leaveRequestId = ca474897-b92f-45cb-9984-8caf6a67fc07
 
 
-### ======================================================
-### 1. DIRECT CREATE ACTIVE FOR REJECT TEST
-### ======================================================
-
-### Direct Create Active Leave Request
+### 3.1 - Direct Create Business Draft
 POST {{baseUrl}}/LeaveRequests
+Authorization: {{employeeAuth}}
 Content-Type: application/json
-Authorization: Basic employee@company.com:123456
 
 {
-  "RequestNumber": "REQ-REJECT-001",
-  "Reason": "Emergency leave using direct reject flow",
+  "Reason": "Case 3 - Direct submit then reject",
   "Employee_ID": "{{employeeId}}",
   "Status": "Drafted",
   "RequestDate": "2026-05-05T09:00:00Z"
 }
 
 
-### ======================================================
-### 2. READ CREATED ACTIVE
-### ======================================================
-### Paste ID dari response Direct Create ke @rejectActiveLeaveRequestId dulu
-
-### Read Active Leave Request
-GET {{baseUrl}}/LeaveRequests(ID='{{rejectActiveLeaveRequestId}}',IsActiveEntity=true)
+### 3.2 - Read Created Data
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)
 
 
-### ======================================================
-### 3. SUBMIT ACTIVE LEAVE REQUEST
-### ======================================================
-
-### Submit Leave Request
-POST {{baseUrl}}/LeaveRequests(ID='{{rejectActiveLeaveRequestId}}',IsActiveEntity=true)/LeaveService.submit
+### 3.3 - Submit Leave Request
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.submit
+Authorization: {{employeeAuth}}
 Content-Type: application/json
-Authorization: Basic employee@company.com:123456
 
 {}
 
 
-### Read Submitted Leave Request
-GET {{baseUrl}}/LeaveRequests(ID='{{rejectActiveLeaveRequestId}}',IsActiveEntity=true)
+### 3.4 - Read After Submit
+### Expected:
+### Status = Submitted
+### RequestNumber generated
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)
 
 
-### ======================================================
-### 4. REJECT SUBMITTED LEAVE REQUEST
-### ======================================================
-
-### Reject Leave Request
-POST {{baseUrl}}/LeaveRequests(ID='{{rejectActiveLeaveRequestId}}',IsActiveEntity=true)/LeaveService.reject
+### 3.5 - Reject Leave Request
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.reject
+Authorization: {{managerAuth}}
 Content-Type: application/json
-Authorization: Basic manager@company.com:123456
 
 {
-  "Comments": "Rejected using direct create active flow test"
+  "Comments": "Case 3 rejected after direct submit"
 }
 
 
-### ======================================================
-### 5. READ AFTER REJECT
-### ======================================================
-### Saat reject masih dummy, status DB kemungkinan masih Submitted.
-### Setelah reject-leave.js real, status harus berubah jadi Rejected.
-
-### Read Rejected Leave Request with History
-GET {{baseUrl}}/LeaveRequests(ID='{{rejectActiveLeaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals
+### 3.6 - Read Rejected Leave Request with Approval History
+### Expected:
+### Status = Rejected
+### IsClosed = true
+### LeaveApprovals contains Rejected history
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals

@@ -14,7 +14,6 @@ type Status : String enum {
     Rejected = 'Rejected';
 }
 
-@odata.draft.enabled
 entity Employees : cuid, managed {
     EmployeeNumber : String(10) not null default 'XXX-XXXXXX';
     FirstName      : String(40) not null;
@@ -26,7 +25,6 @@ entity Employees : cuid, managed {
     Active         : Boolean default true not null;
 }
 
-@odata.draft.enabled
 entity LeaveTypes : cuid, managed {
     Code        : String(10) not null;
     Description : String(50) not null;
@@ -34,7 +32,6 @@ entity LeaveTypes : cuid, managed {
     Active      : Boolean default true not null;
 }
 
-@odata.draft.enabled
 entity LeaveRequests : cuid, managed {
     RequestNumber  : String(15) not null default 'XX-XXXX-XXXXXXX';
     Reason         : String(255) not null;

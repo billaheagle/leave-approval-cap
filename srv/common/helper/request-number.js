@@ -20,7 +20,7 @@ module.exports = {
             nextNumber = parseInt(lastNumber, 10) + 1;
         }
 
-        // Format nomor urut menjadi 4 digit
+        // Format nomor urut menjadi 7 digit
         const formattedNumber = nextNumber.toString().padStart(7, "0");
 
         return `LR-${year}-${formattedNumber}`;
