@@ -3,7 +3,6 @@ const LeaveStatus = require("./leave-status");
 const allowedTransitions = {
     undefined: [
         LeaveStatus.DRAFTED,
-        LeaveStatus.SUBMITTED
     ],
     [LeaveStatus.DRAFTED]: [
         LeaveStatus.SUBMITTED,

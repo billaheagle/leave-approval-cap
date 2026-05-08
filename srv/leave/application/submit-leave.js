@@ -8,7 +8,7 @@ const RequestNumber = require("../../common/helper/request-number");
 const getRequestId = (req) => req.params?.[0]?.ID || req.data?.ID;
 
 module.exports = {
-    async execute(req, srv) {
+    async execute(req) {
         const ID = getRequestId(req);
 
         if (!ID) {
@@ -17,7 +17,7 @@ module.exports = {
 
         const tx = cds.tx(req);
 
-        const leaveRequest = await LeaveRequestRepository.findById(tx, srv, ID);
+        const leaveRequest = await LeaveRequestRepository.findById(tx, ID);
 
         if (!leaveRequest) {
             req.reject(404, "Leave request not found.");
@@ -36,7 +36,7 @@ module.exports = {
                 ? leaveRequest.RequestNumber
                 : await RequestNumber.generateRequestNumber(tx);
 
-        await LeaveRequestRepository.update(tx, srv, ID, {
+        await LeaveRequestRepository.update(tx, ID, {
             RequestNumber: requestNumber,
             Status: LeaveStatus.SUBMITTED,
             RequestDate: new Date()

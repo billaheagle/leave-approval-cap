@@ -1,8 +1,13 @@
+const cds = require("@sap/cds");
 const BaseRepository = require("../../common/persistence/base-repository");
 
+function getEntities() {
+    return cds.entities("my.leave");
+}
+
 module.exports = {
-    async findByLeaveRequestId(tx, srv, LeaveRequest_ID) {
-        const { LeaveApprovals } = srv.entities;
+    async findByLeaveRequestId(tx, LeaveRequest_ID) {
+        const { LeaveApprovals } = getEntities();
 
         return BaseRepository.findMany(
             tx,
@@ -12,8 +17,8 @@ module.exports = {
         );
     },
 
-    async insert(tx, srv, data) {
-        const { LeaveApprovals } = srv.entities;
+    async insert(tx, data) {
+        const { LeaveApprovals } = getEntities();
 
         return BaseRepository.insert(tx, LeaveApprovals, data);
     }

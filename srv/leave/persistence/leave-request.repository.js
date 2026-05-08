@@ -1,32 +1,37 @@
+const cds = require("@sap/cds");
 const BaseRepository = require("../../common/persistence/base-repository");
 
+function getEntities() {
+    return cds.entities("my.leave");
+}
+
 module.exports = {
-    async findById(tx, srv, ID) {
-        const { LeaveRequests } = srv.entities;
+    async findById(tx, ID) {
+        const { LeaveRequests } = getEntities();
 
         return BaseRepository.findOne(tx, LeaveRequests, { ID });
     },
 
-    async update(tx, srv, ID, data) {
-        const { LeaveRequests } = srv.entities;
+    async update(tx, ID, data) {
+        const { LeaveRequests } = getEntities();
 
         return BaseRepository.update(tx, LeaveRequests, { ID }, data);
     },
 
-    async updateStatus(tx, srv, ID, data) {
-        const { LeaveRequests } = srv.entities;
+    async updateStatus(tx, ID, data) {
+        const { LeaveRequests } = getEntities();
 
         return BaseRepository.update(tx, LeaveRequests, { ID }, data);
     },
 
-    async findByRequestNumber(tx, srv, RequestNumber) {
-        const { LeaveRequests } = srv.entities;
+    async findByRequestNumber(tx, RequestNumber) {
+        const { LeaveRequests } = getEntities();
 
         return BaseRepository.findOne(tx, LeaveRequests, { RequestNumber });
     },
 
-    async findByEmployeeId(tx, srv, Employee_ID) {
-        const { LeaveRequests } = srv.entities;
+    async findByEmployeeId(tx, Employee_ID) {
+        const { LeaveRequests } = getEntities();
 
         return BaseRepository.findMany(tx, LeaveRequests, { Employee_ID });
     }

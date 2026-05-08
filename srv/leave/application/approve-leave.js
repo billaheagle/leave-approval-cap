@@ -9,7 +9,7 @@ const CurrentEmployee = require("../../common/auth/current-employee");
 const getRequestId = (req) => req.params?.[0]?.ID || req.data?.ID;
 
 module.exports = {
-    async execute(req, srv) {
+    async execute(req) {
         const ID = getRequestId(req);
         const { Comments } = req.data;
 
@@ -25,7 +25,7 @@ module.exports = {
 
         const approver = await CurrentEmployee.get(req);
 
-        const leaveRequest = await LeaveRequestRepository.findById(tx, srv, ID);
+        const leaveRequest = await LeaveRequestRepository.findById(tx, ID);
 
         if (!leaveRequest) {
             req.reject(404, "Leave request not found.");
@@ -39,11 +39,11 @@ module.exports = {
 
         const approvalDate = new Date();
 
-        await LeaveRequestRepository.updateStatus(tx, srv, ID, {
+        await LeaveRequestRepository.updateStatus(tx, ID, {
             Status: LeaveStatus.APPROVED
         });
 
-        await LeaveApprovalRepository.insert(tx, srv, {
+        await LeaveApprovalRepository.insert(tx, {
             LeaveRequest_ID: ID,
             Approver_ID: approver.ID,
             Decision: LeaveStatus.APPROVED,

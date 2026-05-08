@@ -5,7 +5,7 @@ const EmployeeNumber = require("../domain/employee-number");
 const DEFAULT_EMPLOYEE_NUMBER = "XXX-XXXXXX";
 
 module.exports = {
-    async execute(req, srv) {
+    async execute(req) {
         if (req.data.EmployeeNumber && req.data.EmployeeNumber !== DEFAULT_EMPLOYEE_NUMBER) {
             return;
         }
@@ -14,7 +14,6 @@ module.exports = {
 
         const lastEmployeeNumber = await EmployeeRepository.findLastEmployeeNumber(
             tx,
-            srv,
             EmployeeNumber.PREFIX
         );
 
