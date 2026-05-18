@@ -19,9 +19,21 @@ module.exports = {
         return tx.run(query);
     },
 
+    async findManyByQuery(tx, entity, buildQuery) {
+        const query = buildQuery(SELECT.from(entity));
+
+        return tx.run(query);
+    },
+
     async insert(tx, entity, data) {
         return tx.run(
             INSERT.into(entity).entries(data)
+        );
+    },
+
+    async insertMany(tx, entity, rows) {
+        return tx.run(
+            INSERT.into(entity).entries(rows)
         );
     },
 

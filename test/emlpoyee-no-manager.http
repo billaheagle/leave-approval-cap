@@ -1,0 +1,41 @@
+@baseUrl = http://localhost:4004/odata/v4/leave
+@employeeNoManagerId = 00000000-0000-0000-0000-000000000015
+
+@employeeNoManagerAuth = Basic employee.nomanager@company.com:123456
+
+# Setelah step 5.1 berhasil, copy ID dari response lalu paste di sini
+@leaveRequestId = paste-created-id-here
+
+
+### 5.1 - Create Business Draft - Employee Without Manager
+POST {{baseUrl}}/LeaveRequests
+Authorization: {{employeeNoManagerAuth}}
+Content-Type: application/json
+
+{
+  "Reason": "Case 5 - Employee without manager",
+  "Employee_ID": "{{employeeNoManagerId}}",
+  "RequestDate": "2026-05-05T09:00:00Z"
+}
+
+
+### 5.2 - Read Created Data
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals
+Authorization: {{employeeNoManagerAuth}}
+
+
+### 5.3 - Submit Leave Request
+### Expected:
+### 400
+### No manager/approver found for this employee.
+### Please contact IT/HR to maintain your manager data.
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.submit
+Authorization: {{employeeNoManagerAuth}}
+Content-Type: application/json
+
+{}
+
+
+### 5.4 - Read Leave Request Should Still Be Drafted
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals
+Authorization: {{employeeNoManagerAuth}}

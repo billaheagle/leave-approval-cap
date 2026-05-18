@@ -10,7 +10,10 @@ type Status : String enum {
     Drafted = 'Drafted';
     Submitted = 'Submitted';
     InProgress = 'InProgress';
+    Pending = 'Pending';
+    Waiting = 'Waiting';
     Approved = 'Approved';
+    Skipped = 'Skipped';
     Rejected = 'Rejected';
 }
 
@@ -45,8 +48,10 @@ entity LeaveRequests : cuid, managed {
 
 entity LeaveApprovals : cuid, managed {
     LeaveRequest : Association to LeaveRequests not null;
+    StepNo       : Integer;
     Approver     : Association to Employees not null;
+    IsCurrent    : Boolean default false;
     Decision     : Status not null;
-    ApprovalDate : DateTime;
+    DecisionDate : DateTime;
     Comments     : String(255);
 }

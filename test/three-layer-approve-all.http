@@ -1,0 +1,106 @@
+@baseUrl = http://localhost:4004/odata/v4/leave
+@employeeThreeId = 00000000-0000-0000-0000-000000000014
+
+@employeeThreeAuth = Basic employee.three@company.com:123456
+@managerThreeLevel1Auth = Basic manager.three.l1@company.com:123456
+@managerThreeLevel2Auth = Basic manager.three.l2@company.com:123456
+@managerThreeLevel3Auth = Basic manager.three.l3@company.com:123456
+
+# Setelah step 3.1 berhasil, copy ID dari response lalu paste di sini
+@leaveRequestId = paste-created-id-here
+
+
+### 3.1 - Create Business Draft - Three Approval Layers
+POST {{baseUrl}}/LeaveRequests
+Authorization: {{employeeThreeAuth}}
+Content-Type: application/json
+
+{
+  "Reason": "Case 3 - Three layer approval, approve all",
+  "Employee_ID": "{{employeeThreeId}}",
+  "RequestDate": "2026-05-05T09:00:00Z"
+}
+
+
+### 3.2 - Read Created Data
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals
+Authorization: {{employeeThreeAuth}}
+
+
+### 3.3 - Submit Leave Request
+### Expected:
+### Status = InProgress
+### Step 1 = Pending, IsCurrent = true
+### Step 2 = Waiting, IsCurrent = false
+### Step 3 = Waiting, IsCurrent = false
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.submit
+Authorization: {{employeeThreeAuth}}
+Content-Type: application/json
+
+{}
+
+
+### 3.4 - Read After Submit
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals
+Authorization: {{employeeThreeAuth}}
+
+
+### 3.5 - Level 1 Approve
+### Expected:
+### Step 1 = Approved
+### Step 2 = Pending
+### Step 3 = Waiting
+### LeaveRequest.Status = InProgress
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.approve
+Authorization: {{managerThreeLevel1Auth}}
+Content-Type: application/json
+
+{
+  "Comments": "Case 3 level 1 approved"
+}
+
+
+### 3.6 - Read After Level 1 Approve
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals
+Authorization: {{employeeThreeAuth}}
+
+
+### 3.7 - Level 2 Approve
+### Expected:
+### Step 1 = Approved
+### Step 2 = Approved
+### Step 3 = Pending
+### LeaveRequest.Status = InProgress
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.approve
+Authorization: {{managerThreeLevel2Auth}}
+Content-Type: application/json
+
+{
+  "Comments": "Case 3 level 2 approved"
+}
+
+
+### 3.8 - Read After Level 2 Approve
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals
+Authorization: {{employeeThreeAuth}}
+
+
+### 3.9 - Level 3 Approve
+### Expected:
+### Step 1 = Approved
+### Step 2 = Approved
+### Step 3 = Approved
+### LeaveRequest.Status = Approved
+### LeaveRequest.IsClosed = true
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.approve
+Authorization: {{managerThreeLevel3Auth}}
+Content-Type: application/json
+
+{
+  "Comments": "Case 3 level 3 approved"
+}
+
+
+### 3.10 - Read Approved Leave Request
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals
+Authorization: {{employeeThreeAuth}}

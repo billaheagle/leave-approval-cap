@@ -3,5 +3,8 @@ module.exports = {
     SUBMITTED: "Submitted",
     INPROGRESS: "InProgress",
     APPROVED: "Approved",
-    REJECTED: "Rejected"
+    REJECTED: "Rejected",
+    PENDING: "Pending",
+    WAITING: "Waiting",
+    SKIPPED: "Skipped"
 };

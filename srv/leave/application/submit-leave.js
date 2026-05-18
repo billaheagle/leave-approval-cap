@@ -1,9 +1,14 @@
 const cds = require("@sap/cds");
 
 const LeaveRequestRepository = require("../persistence/leave-request.repository");
+const LeaveApprovalRepository = require("../persistence/leave-approval.repository");
+
 const LeaveStatus = require("../domain/leave-status");
+const LeaveRequestNumber = require("../domain/leave-request-number");
 const LeaveTransition = require("../domain/leave-transition");
-const RequestNumber = require("../../common/helper/request-number");
+
+const GenerateLeaveRequestNumber = require("./generate-leave-request-number");
+const BuildManagerHierarchy = require("./build-manager-hierarchy");
 
 const getRequestId = (req) => req.params?.[0]?.ID || req.data?.ID;
 
@@ -26,24 +31,45 @@ module.exports = {
         LeaveTransition.ensureCanMove(
             req,
             leaveRequest.Status,
-            LeaveStatus.SUBMITTED
+            LeaveStatus.INPROGRESS
         );
 
-        // Generate Request Number menggunakan helper
-        const DEFAULT_REQUEST_NUMBER = "XX-XXXX-XXXXXXX";
-        const requestNumber =
-            leaveRequest.RequestNumber && leaveRequest.RequestNumber !== DEFAULT_REQUEST_NUMBER
-                ? leaveRequest.RequestNumber
-                : await RequestNumber.generateRequestNumber(tx);
+        const hasGeneratedRequestNumber =
+            leaveRequest.RequestNumber &&
+            leaveRequest.RequestNumber !== LeaveRequestNumber.DEFAULT_REQUEST_NUMBER;
+
+        const requestNumber = hasGeneratedRequestNumber
+            ? leaveRequest.RequestNumber
+            : await GenerateLeaveRequestNumber.execute(tx);
+
+        const approvalHierarchy = await BuildManagerHierarchy.build(
+            req,
+            tx,
+            leaveRequest.Employee_ID
+        );
+
+        const approvalRows = approvalHierarchy.map((item, index) => ({
+            LeaveRequest_ID: ID,
+            StepNo: item.StepNo,
+            Approver_ID: item.Approver_ID,
+            IsCurrent: index === 0,
+            Decision: index === 0
+                ? LeaveStatus.PENDING
+                : LeaveStatus.WAITING
+        }));
+
+        await LeaveApprovalRepository.insertMany(tx, approvalRows);
 
         await LeaveRequestRepository.update(tx, ID, {
             RequestNumber: requestNumber,
-            Status: LeaveStatus.SUBMITTED,
+            Status: LeaveStatus.INPROGRESS,
+            IsClosed: false,
             RequestDate: new Date()
         });
 
         return {
-            Status: LeaveStatus.SUBMITTED
+            Status: LeaveStatus.INPROGRESS,
+            RequestNumber: requestNumber
         };
     }
 };

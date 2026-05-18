@@ -34,5 +34,23 @@ module.exports = {
         const { LeaveRequests } = getEntities();
 
         return BaseRepository.findMany(tx, LeaveRequests, { Employee_ID });
+    },
+
+    async findLatestRequestNumberByYear(tx, year) {
+        const { LeaveRequests } = getEntities();
+
+        const prefix = `LV-${year}-`;
+
+        const rows = await BaseRepository.findManyByQuery(
+            tx,
+            LeaveRequests,
+            (query) => query
+                .columns("RequestNumber")
+                .where`RequestNumber like ${prefix + "%"}`
+                .orderBy("RequestNumber desc")
+                .limit(1)
+        );
+
+        return rows?.[0]?.RequestNumber || null;
     }
 };

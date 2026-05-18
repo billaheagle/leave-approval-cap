@@ -21,5 +21,11 @@ module.exports = {
         );
 
         return result?.[0]?.EmployeeNumber || null;
+    },
+
+    async findById(tx, ID) {
+        const { Employees } = getEntities();
+
+        return BaseRepository.findOne(tx, Employees, { ID });
     }
 };

@@ -1,0 +1,95 @@
+@baseUrl = http://localhost:4004/odata/v4/leave
+@employeeId = 00000000-0000-0000-0000-000000000007
+
+@employeeAuth = Basic employee@company.com:123456
+@managerAuth = Basic manager@company.com:123456
+
+# Setelah step 4.2 berhasil, copy ID dari response lalu paste di sini
+@leaveRequestId = paste-created-id-here
+
+
+### 4.1 - Invalid Create Directly As Submitted
+### Expected:
+### 400
+POST {{baseUrl}}/LeaveRequests
+Authorization: {{employeeAuth}}
+Content-Type: application/json
+
+{
+  "Reason": "Invalid direct submitted request",
+  "Employee_ID": "{{employeeId}}",
+  "Status": "Submitted",
+  "RequestDate": "2026-05-05T09:00:00Z"
+}
+
+
+### 4.2 - Create Valid Business Draft
+POST {{baseUrl}}/LeaveRequests
+Authorization: {{employeeAuth}}
+Content-Type: application/json
+
+{
+  "Reason": "Case 4 - Valid draft for bypass testing",
+  "Employee_ID": "{{employeeId}}",
+  "RequestDate": "2026-05-05T09:00:00Z"
+}
+
+
+### 4.3 - Read Created Data
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals
+Authorization: {{employeeAuth}}
+
+
+### 4.4 - Invalid Patch Directly To InProgress
+### Expected:
+### 400
+PATCH {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)
+Authorization: {{employeeAuth}}
+Content-Type: application/json
+
+{
+  "Status": "InProgress"
+}
+
+
+### 4.5 - Invalid Patch Directly To Approved
+### Expected:
+### 400
+PATCH {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)
+Authorization: {{managerAuth}}
+Content-Type: application/json
+
+{
+  "Status": "Approved",
+  "IsClosed": true
+}
+
+
+### 4.6 - Invalid Patch RequestNumber Manually
+### Expected:
+### 400
+PATCH {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)
+Authorization: {{employeeAuth}}
+Content-Type: application/json
+
+{
+  "RequestNumber": "LV-2026-9999999"
+}
+
+
+### 4.7 - Invalid Direct Create Approval History
+### Expected:
+### 400
+POST {{baseUrl}}/LeaveApprovals
+Authorization: {{managerAuth}}
+Content-Type: application/json
+
+{
+  "LeaveRequest_ID": "{{leaveRequestId}}",
+  "StepNo": 1,
+  "Approver_ID": "00000000-0000-0000-0000-000000000006",
+  "IsCurrent": true,
+  "Decision": "Approved",
+  "DecisionDate": "2026-05-05T10:00:00Z",
+  "Comments": "Bypass approval"
+}

@@ -37,6 +37,36 @@
             "roles": [
               "manager"
             ]
+          },
+          "manager.two.l1@company.com": {
+            "password": "123456",
+            "roles": [
+              "manager"
+            ]
+          },
+          "manager.two.l2@company.com": {
+            "password": "123456",
+            "roles": [
+              "manager"
+            ]
+          },
+          "manager.three.l1@company.com": {
+            "password": "123456",
+            "roles": [
+              "manager"
+            ]
+          },
+          "manager.three.l2@company.com": {
+            "password": "123456",
+            "roles": [
+              "manager"
+            ]
+          },
+          "manager.three.l3@company.com": {
+            "password": "123456",
+            "roles": [
+              "manager"
+            ]
           }
         },
         "default": "employee@company.com"

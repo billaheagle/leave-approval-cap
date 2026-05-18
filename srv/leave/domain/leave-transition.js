@@ -2,20 +2,23 @@ const LeaveStatus = require("./leave-status");
 
 const allowedTransitions = {
     undefined: [
-        LeaveStatus.DRAFTED,
+        LeaveStatus.DRAFTED
     ],
+
     [LeaveStatus.DRAFTED]: [
         LeaveStatus.SUBMITTED,
+        LeaveStatus.INPROGRESS
     ],
+
     [LeaveStatus.SUBMITTED]: [
-        LeaveStatus.INPROGRESS,
-        LeaveStatus.APPROVED,
-        LeaveStatus.REJECTED
+        LeaveStatus.INPROGRESS
     ],
+
     [LeaveStatus.INPROGRESS]: [
         LeaveStatus.APPROVED,
         LeaveStatus.REJECTED
     ],
+
     [LeaveStatus.APPROVED]: [],
     [LeaveStatus.REJECTED]: []
 };

@@ -2,8 +2,10 @@ const cds = require("@sap/cds");
 
 const LeaveRequestRepository = require("../persistence/leave-request.repository");
 const LeaveApprovalRepository = require("../persistence/leave-approval.repository");
+
 const LeaveStatus = require("../domain/leave-status");
-const LeaveTransition = require("../domain/leave-transition");
+const ApprovalTransition = require("../domain/approval-transition");
+
 const CurrentEmployee = require("../../common/auth/current-employee");
 
 const getRequestId = (req) => req.params?.[0]?.ID || req.data?.ID;
@@ -11,14 +13,10 @@ const getRequestId = (req) => req.params?.[0]?.ID || req.data?.ID;
 module.exports = {
     async execute(req) {
         const ID = getRequestId(req);
-        const { Comments } = req.data;
+        const { Comments } = req.data || {};
 
         if (!ID) {
             req.reject(400, "Leave request ID is required.");
-        }
-
-        if (!req.user.is("manager")) {
-            req.reject(403, "Only manager can reject leave request.");
         }
 
         const tx = cds.tx(req);
@@ -31,25 +29,54 @@ module.exports = {
             req.reject(404, "Leave request not found.");
         }
 
-        LeaveTransition.ensureCanMove(
+        if (leaveRequest.IsClosed) {
+            req.reject(400, "Leave request is already closed.");
+        }
+
+        if (leaveRequest.Status !== LeaveStatus.INPROGRESS) {
+            req.reject(
+                400,
+                `Leave request cannot be rejected while status is '${leaveRequest.Status}'.`
+            );
+        }
+
+        const currentApproval =
+            await LeaveApprovalRepository.findCurrentPendingByRequestId(tx, ID);
+
+        if (!currentApproval) {
+            req.reject(
+                400,
+                "No pending approval found for this leave request."
+            );
+        }
+
+        if (currentApproval.Approver_ID !== approver.ID) {
+            req.reject(
+                403,
+                "You are not the current approver for this leave request."
+            );
+        }
+
+        ApprovalTransition.ensureCanMove(
             req,
             leaveRequest.Status,
             LeaveStatus.REJECTED
         );
 
-        const approvalDate = new Date();
+        const decisionDate = new Date();
 
-        await LeaveRequestRepository.updateStatus(tx, ID, {
-            Status: LeaveStatus.REJECTED,
-            IsClosed: true
+        await LeaveApprovalRepository.update(tx, currentApproval.ID, {
+            Decision: LeaveStatus.REJECTED,
+            IsCurrent: false,
+            DecisionDate: decisionDate,
+            Comments: Comments || "Rejected"
         });
 
-        await LeaveApprovalRepository.insert(tx, {
-            LeaveRequest_ID: ID,
-            Approver_ID: approver.ID,
-            Decision: LeaveStatus.REJECTED,
-            ApprovalDate: approvalDate,
-            Comments: Comments || "Rejected"
+        await LeaveApprovalRepository.skipWaitingByRequestId(tx, ID);
+
+        await LeaveRequestRepository.update(tx, ID, {
+            Status: LeaveStatus.REJECTED,
+            IsClosed: true
         });
 
         return {

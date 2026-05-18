@@ -1,0 +1,75 @@
+@baseUrl = http://localhost:4004/odata/v4/leave
+@employeeTwoId = 00000000-0000-0000-0000-000000000010
+
+@employeeTwoAuth = Basic employee.two@company.com:123456
+@managerTwoLevel1Auth = Basic manager.two.l1@company.com:123456
+@managerTwoLevel2Auth = Basic manager.two.l2@company.com:123456
+
+# Setelah step 2.1 berhasil, copy ID dari response lalu paste di sini
+@leaveRequestId = paste-created-id-here
+
+
+### 2.1 - Create Business Draft - Two Approval Layers
+POST {{baseUrl}}/LeaveRequests
+Authorization: {{employeeTwoAuth}}
+Content-Type: application/json
+
+{
+  "Reason": "Case 2 - Two layer approval, level 1 reject",
+  "Employee_ID": "{{employeeTwoId}}",
+  "RequestDate": "2026-05-05T09:00:00Z"
+}
+
+
+### 2.2 - Read Created Data
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals
+Authorization: {{employeeTwoAuth}}
+
+
+### 2.3 - Submit Leave Request
+### Expected:
+### Status = InProgress
+### Step 1 = Pending, IsCurrent = true
+### Step 2 = Waiting, IsCurrent = false
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.submit
+Authorization: {{employeeTwoAuth}}
+Content-Type: application/json
+
+{}
+
+
+### 2.4 - Read After Submit
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals
+Authorization: {{employeeTwoAuth}}
+
+
+### 2.5 - Level 1 Reject
+### Expected:
+### Step 1 = Rejected, IsCurrent = false
+### Step 2 = Skipped, IsCurrent = false
+### LeaveRequest.Status = Rejected
+### LeaveRequest.IsClosed = true
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.reject
+Authorization: {{managerTwoLevel1Auth}}
+Content-Type: application/json
+
+{
+  "Comments": "Case 2 rejected by level 1"
+}
+
+
+### 2.6 - Read Rejected Leave Request
+GET {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)?$expand=LeaveApprovals
+Authorization: {{employeeTwoAuth}}
+
+
+### 2.7 - Invalid - Level 2 Tries To Approve After Rejected
+### Expected:
+### Error because leave request already closed / rejected
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.approve
+Authorization: {{managerTwoLevel2Auth}}
+Content-Type: application/json
+
+{
+  "Comments": "Level 2 tries to approve after level 1 rejection"
+}
