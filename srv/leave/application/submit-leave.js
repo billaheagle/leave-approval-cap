@@ -1,5 +1,6 @@
 const cds = require("@sap/cds");
 
+const CurrentEmployee = require("../../common/auth/current-employee");
 const LeaveRequestRepository = require("../persistence/leave-request.repository");
 const LeaveApprovalRepository = require("../persistence/leave-approval.repository");
 
@@ -26,6 +27,15 @@ module.exports = {
 
         if (!leaveRequest) {
             req.reject(404, "Leave request not found.");
+        }
+
+        const currentEmployee = await CurrentEmployee.get(req);
+
+        if (leaveRequest.Employee_ID !== currentEmployee.ID && !req.user.is("admin")) {
+            req.reject(
+                403,
+                "You can only submit your own leave request."
+            );
         }
 
         LeaveTransition.ensureCanMove(

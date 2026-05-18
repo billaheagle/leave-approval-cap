@@ -32,6 +32,24 @@
               "employee"
             ]
           },
+          "employee.two@company.com": {
+            "password": "123456",
+            "roles": [
+              "employee"
+            ]
+          },
+          "employee.three@company.com": {
+            "password": "123456",
+            "roles": [
+              "employee"
+            ]
+          },
+          "employee.nomanager@company.com": {
+            "password": "123456",
+            "roles": [
+              "employee"
+            ]
+          },
           "manager@company.com": {
             "password": "123456",
             "roles": [

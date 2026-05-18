@@ -4,6 +4,7 @@ const LeaveRequestRepository = require("../persistence/leave-request.repository"
 const LeaveApprovalRepository = require("../persistence/leave-approval.repository");
 
 const LeaveStatus = require("../domain/leave-status");
+const LeaveTransition = require("../domain/leave-transition");
 const ApprovalTransition = require("../domain/approval-transition");
 
 const CurrentEmployee = require("../../common/auth/current-employee");
@@ -59,6 +60,12 @@ module.exports = {
 
         const decisionDate = new Date();
 
+        ApprovalTransition.ensureCanMove(
+            req,
+            currentApproval.Decision,
+            LeaveStatus.APPROVED
+        );
+
         await LeaveApprovalRepository.update(tx, currentApproval.ID, {
             Decision: LeaveStatus.APPROVED,
             IsCurrent: false,
@@ -74,6 +81,12 @@ module.exports = {
             );
 
         if (nextApproval) {
+            ApprovalTransition.ensureCanMove(
+                req,
+                nextApproval.Decision,
+                LeaveStatus.PENDING
+            );
+
             await LeaveApprovalRepository.update(tx, nextApproval.ID, {
                 Decision: LeaveStatus.PENDING,
                 IsCurrent: true
@@ -85,7 +98,7 @@ module.exports = {
             };
         }
 
-        ApprovalTransition.ensureCanMove(
+        LeaveTransition.ensureCanMove(
             req,
             leaveRequest.Status,
             LeaveStatus.APPROVED

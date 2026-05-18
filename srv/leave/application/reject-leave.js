@@ -4,6 +4,7 @@ const LeaveRequestRepository = require("../persistence/leave-request.repository"
 const LeaveApprovalRepository = require("../persistence/leave-approval.repository");
 
 const LeaveStatus = require("../domain/leave-status");
+const LeaveTransition = require("../domain/leave-transition");
 const ApprovalTransition = require("../domain/approval-transition");
 
 const CurrentEmployee = require("../../common/auth/current-employee");
@@ -58,6 +59,12 @@ module.exports = {
         }
 
         ApprovalTransition.ensureCanMove(
+            req,
+            currentApproval.Decision,
+            LeaveStatus.REJECTED
+        );
+
+        LeaveTransition.ensureCanMove(
             req,
             leaveRequest.Status,
             LeaveStatus.REJECTED

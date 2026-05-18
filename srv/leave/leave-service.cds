@@ -7,18 +7,22 @@ service LeaveService {
             *,
             LeaveApprovals
         }
-        
+
         actions {
             action submit()                  returns {
-                Status : String;
+                Status        : String;
+                RequestNumber : String;
             };
 
             action approve(Comments: String) returns {
-                Status : String;
+                Status        : String;
+                IsClosed      : Boolean;
+                CurrentStepNo : Integer;
             };
 
             action reject(Comments: String)  returns {
-                Status : String;
+                Status        : String;
+                IsClosed      : Boolean;
             };
         };
 

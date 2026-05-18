@@ -13,3 +13,4 @@ ID,EmployeeNumber,FirstName,LastName,Email,Manager_ID,CostCenter,Country_code,Ac
 00000000-0000-0000-0000-000000000012,EMP-000012,Manager,ThreeLevel2,manager.three.l2@company.com,00000000-0000-0000-0000-000000000013,CC007,ID,true
 00000000-0000-0000-0000-000000000013,EMP-000013,Manager,ThreeLevel3,manager.three.l3@company.com,,CC008,ID,true
 00000000-0000-0000-0000-000000000014,EMP-000014,Employee,ThreeApproval,employee.three@company.com,00000000-0000-0000-0000-000000000011,CC009,ID,true
+00000000-0000-0000-0000-000000000015,EMP-000015,Employee,NoManager,employee.nomanager@company.com,,CC010,ID,true

@@ -11,11 +11,6 @@ const allowedTransitions = {
         LeaveStatus.SKIPPED
     ],
 
-    [LeaveStatus.INPROGRESS]: [
-        LeaveStatus.APPROVED,
-        LeaveStatus.REJECTED
-    ],
-
     [LeaveStatus.PENDING]: [
         LeaveStatus.APPROVED,
         LeaveStatus.REJECTED
