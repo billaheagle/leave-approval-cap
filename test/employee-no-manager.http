@@ -13,9 +13,7 @@ Authorization: {{employeeNoManagerAuth}}
 Content-Type: application/json
 
 {
-  "Reason": "Case 5 - Employee without manager",
-  "Employee_ID": "{{employeeNoManagerId}}",
-  "RequestDate": "2026-05-05T09:00:00Z"
+  "Reason": "Case 5 - Employee without manager"
 }
 
 

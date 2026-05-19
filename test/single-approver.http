@@ -14,9 +14,7 @@ Authorization: {{employeeAuth}}
 Content-Type: application/json
 
 {
-  "Reason": "Case 1 - Single approval then approve",
-  "Employee_ID": "{{employeeId}}",
-  "RequestDate": "2026-05-05T09:00:00Z"
+  "Reason": "Case 1 - Single approval then approve"
 }
 
 

@@ -15,9 +15,7 @@ Authorization: {{employeeTwoAuth}}
 Content-Type: application/json
 
 {
-  "Reason": "Case 2 - Two layer approval, level 1 reject",
-  "Employee_ID": "{{employeeTwoId}}",
-  "RequestDate": "2026-05-05T09:00:00Z"
+  "Reason": "Case 2 - Two layer approval, level 1 reject"
 }
 
 

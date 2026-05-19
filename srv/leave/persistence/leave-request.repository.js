@@ -18,7 +18,7 @@ module.exports = {
         return BaseRepository.update(tx, LeaveRequests, { ID }, data);
     },
 
-    async updateStatus(tx, ID, data) {
+    async updateLifecycle(tx, ID, data) {
         const { LeaveRequests } = getEntities();
 
         return BaseRepository.update(tx, LeaveRequests, { ID }, data);

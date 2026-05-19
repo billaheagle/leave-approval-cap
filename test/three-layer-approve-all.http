@@ -16,9 +16,7 @@ Authorization: {{employeeThreeAuth}}
 Content-Type: application/json
 
 {
-  "Reason": "Case 3 - Three layer approval, approve all",
-  "Employee_ID": "{{employeeThreeId}}",
-  "RequestDate": "2026-05-05T09:00:00Z"
+  "Reason": "Case 3 - Three layer approval, approve all"
 }
 
 

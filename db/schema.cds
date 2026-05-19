@@ -39,7 +39,7 @@ entity LeaveRequests : cuid, managed {
     RequestNumber  : String(15) not null default 'XX-XXXX-XXXXXXX';
     Reason         : String(255) not null;
     Employee       : Association to Employees not null;
-    RequestDate    : DateTime not null;
+    RequestDate    : DateTime;
     Status         : Status not null default #Drafted;
     IsClosed       : Boolean default false not null;
     LeaveApprovals : Composition of many LeaveApprovals

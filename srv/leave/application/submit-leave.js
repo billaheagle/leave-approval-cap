@@ -68,6 +68,15 @@ module.exports = {
                 : LeaveStatus.WAITING
         }));
 
+        const existingApprovals = await LeaveApprovalRepository.findByLeaveRequestId(tx, ID);
+
+        if (existingApprovals.length > 0) {
+            req.reject(
+                400,
+                "Approval workflow has already been generated for this leave request."
+            );
+        }
+
         await LeaveApprovalRepository.insertMany(tx, approvalRows);
 
         await LeaveRequestRepository.update(tx, ID, {
