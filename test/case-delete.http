@@ -1,0 +1,47 @@
+@baseUrl = http://localhost:4004/odata/v4/leave
+@employeeAuth = Basic employee@company.com:123456
+@managerAuth = Basic manager@company.com:123456
+
+# Setelah create, copy ID dari response
+@leaveRequestId = 260f1d9d-3d84-472d-bf2d-5c903abcbfb0
+
+
+### Create Draft
+POST {{baseUrl}}/LeaveRequests
+Authorization: {{employeeAuth}}
+Content-Type: application/json
+
+{
+  "Reason": "Delete drafted leave request test"
+}
+
+
+### Delete Draft as Owner
+### Expected: 204 No Content
+DELETE {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)
+Authorization: {{employeeAuth}}
+
+
+### Create Draft Again
+POST {{baseUrl}}/LeaveRequests
+Authorization: {{employeeAuth}}
+Content-Type: application/json
+
+{
+  "Reason": "Delete after submit should fail"
+}
+
+
+### Submit
+### Expected: Status = InProgress
+POST {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)/LeaveService.submit
+Authorization: {{employeeAuth}}
+Content-Type: application/json
+
+{}
+
+
+### Delete InProgress
+### Expected: 400 Only drafted leave requests can be deleted.
+DELETE {{baseUrl}}/LeaveRequests(ID='{{leaveRequestId}}',IsActiveEntity=true)
+Authorization: {{employeeAuth}}

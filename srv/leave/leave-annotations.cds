@@ -9,7 +9,7 @@ annotate LeaveService.LeaveRequests with {
 };
 
 annotate LeaveService.LeaveRequests with @(
-    UI.HeaderInfo         : {
+    UI.HeaderInfo                  : {
         TypeName      : 'Leave Request',
         TypeNamePlural: 'Leave Requests',
         Title         : {
@@ -22,14 +22,20 @@ annotate LeaveService.LeaveRequests with @(
         }
     },
 
-    UI.SelectionFields    : [
+    UI.SelectionFields             : [
         RequestNumber,
         Status,
         Employee_ID,
+        LeaveType_ID,
         RequestDate
     ],
 
-    UI.LineItem           : [
+    Capabilities.FilterRestrictions: {FilterExpressionRestrictions: [{
+        Property          : RequestDate,
+        AllowedExpressions: 'SingleRange'
+    }]},
+
+    UI.LineItem                    : [
         {
             $Type: 'UI.DataField',
             Value: RequestNumber,
@@ -37,8 +43,13 @@ annotate LeaveService.LeaveRequests with @(
         },
         {
             $Type: 'UI.DataField',
-            Value: Employee_ID,
+            Value: Employee.EmployeeNumber,
             Label: 'Employee'
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: LeaveType.Description,
+            Label: 'Leave Type'
         },
         {
             $Type: 'UI.DataField',
@@ -57,7 +68,7 @@ annotate LeaveService.LeaveRequests with @(
         }
     ],
 
-    UI.Facets             : [
+    UI.Facets                      : [
         {
             $Type : 'UI.ReferenceFacet',
             Label : 'General Information',
@@ -70,7 +81,7 @@ annotate LeaveService.LeaveRequests with @(
         }
     ],
 
-    UI.FieldGroup #General: {Data: [
+    UI.FieldGroup #General         : {Data: [
         {
             $Type: 'UI.DataField',
             Value: RequestNumber,
@@ -80,6 +91,11 @@ annotate LeaveService.LeaveRequests with @(
             $Type: 'UI.DataField',
             Value: Employee_ID,
             Label: 'Employee'
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: LeaveType_ID,
+            Label: 'Leave Type'
         },
         {
             $Type: 'UI.DataField',
@@ -162,3 +178,63 @@ annotate LeaveService.LeaveApprovals with @(
         }
     ]
 );
+
+annotate LeaveService.LeaveRequests with {
+    LeaveType @(
+        Common.Text           : LeaveType.Description,
+        Common.TextArrangement: #TextOnly,
+
+        Common.ValueList      : {
+            Label         : 'Leave Type',
+            CollectionPath: 'LeaveTypes',
+            Parameters    : [
+                {
+                    $Type            : 'Common.ValueListParameterInOut',
+                    LocalDataProperty: LeaveType_ID,
+                    ValueListProperty: 'ID'
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'Description'
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'MaxDays'
+                }
+            ]
+        }
+    );
+
+    Employee  @(
+        Common.Text           : Employee.EmployeeNumber,
+        Common.TextArrangement: #TextOnly,
+
+        Common.ValueList      : {
+            Label         : 'Employee',
+            CollectionPath: 'Employees',
+            Parameters    : [
+                {
+                    $Type            : 'Common.ValueListParameterInOut',
+                    LocalDataProperty: LeaveType_ID,
+                    ValueListProperty: 'ID'
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'EmployeeNumber'
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'Email'
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'FirstName'
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'LastName'
+                }
+            ]
+        }
+    );
+};

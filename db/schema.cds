@@ -27,9 +27,8 @@ entity Employees : cuid, managed {
     Country        : Country not null;
     Active         : Boolean default true not null;
 }
-
+@cds.odata.valuelist
 entity LeaveTypes : cuid, managed {
-    Code        : String(10) not null;
     Description : String(50) not null;
     MaxDays     : Integer;
     Active      : Boolean default true not null;
@@ -39,6 +38,7 @@ entity LeaveRequests : cuid, managed {
     RequestNumber  : String(15) not null default 'XX-XXXX-XXXXXXX';
     Reason         : String(255) not null;
     Employee       : Association to Employees not null;
+    LeaveType      : Association to LeaveTypes not null;
     RequestDate    : DateTime;
     Status         : Status not null default #Drafted;
     IsClosed       : Boolean default false not null;

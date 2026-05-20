@@ -1,5 +1,6 @@
 using {my.leave as db} from '../../db/schema';
 
+@requires: 'authenticated-user'
 service LeaveService {
     @odata.draft.enabled
     entity LeaveRequests  as
@@ -27,4 +28,8 @@ service LeaveService {
         };
 
     entity LeaveApprovals as projection on db.LeaveApprovals;
+
+    entity LeaveTypes     as projection on db.LeaveTypes;
+
+    entity Employees      as projection on db.Employees;
 }

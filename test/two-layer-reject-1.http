@@ -6,7 +6,7 @@
 @managerTwoLevel2Auth = Basic manager.two.l2@company.com:123456
 
 # Setelah step 2.1 berhasil, copy ID dari response lalu paste di sini
-@leaveRequestId = paste-created-id-here
+@leaveRequestId = 812562dc-73ef-4ccb-ba81-777bbdf3736e
 
 
 ### 2.1 - Create Business Draft - Two Approval Layers
